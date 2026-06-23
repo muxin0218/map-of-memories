@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Star } from "lucide-react";
 import ChinaMap, { SouthChinaSeaInset } from "@/components/ChinaMap";
 import BackToLoginButton from "@/components/BackToLoginButton";
 import { LegendProgress, ProgressBadge, StatsPanel } from "@/components/HomeProgress";
@@ -6,17 +7,9 @@ import RandomPhotoCard from "@/components/RandomPhotoCard";
 
 function BrandMark() {
   return (
-    <svg className="h-11 w-11 pixelated" viewBox="0 0 22 22" aria-hidden="true">
-      <path
-        d="M5 3h4v2h2V3h4v2h2v6h-2v2h-2v2h-2v2H9v-2H7v-2H5v-2H3V5h2z"
-        fill="#F5DCE0"
-      />
-      <path
-        d="M5 3h4v2H5v6H3V5h2zm10 0v2h2v6h-2V5h-4V3zm0 8v2h-2v2h-2v2H9v-2H7v-2H5v-2h2v2h2v2h2v-2h2v-2z"
-        fill="#E8B8C2"
-      />
-      <path d="M7 5h2v2H7zm8 2h-2V5h2z" fill="#FAFBF7" />
-    </svg>
+    <span className="grid h-11 w-11 place-items-center">
+      <Star className="h-10 w-10 fill-[#FFD700] text-[#FFA500]" />
+    </span>
   );
 }
 
@@ -59,7 +52,7 @@ function Legend() {
     <div className="space-y-5">
       <div className="w-fit rounded-[8px] border border-[#D8DDD8]/80 bg-[#FAFBF7]/70 px-5 py-4 text-sm text-[#5A6670]/78 shadow-[0_10px_28px_rgba(90,102,112,0.08)] backdrop-blur">
         <div className="flex items-center gap-3">
-          <span className="h-4 w-4 rounded-[2px] border border-[#E8B8C2] bg-[#F5DCE0] shadow-[0_0_10px_rgba(232,184,194,0.42)]" />
+          <span className="h-4 w-4 rounded-[2px] border border-[#D4A574] bg-[#F0DEC4] shadow-[0_0_10px_rgba(212,165,116,0.42)]" />
           <span>已点亮</span>
         </div>
         <div className="mt-3 flex items-center gap-3">
@@ -94,7 +87,7 @@ export default function MapPage() {
               <BrandMark />
               <div>
                 <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.01em] text-[#5A6670]">
-                  Map of Us
+                  Map of Memories
                 </h1>
                 <p className="mt-1 text-base font-medium text-[#5A6670]/62">我们的地图</p>
               </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode, type SVGProps } from "react";
 import Link from "next/link";
-import { CalendarDays, Heart, Images, RefreshCw } from "lucide-react";
+import { CalendarDays, Heart, Images, RefreshCw, Star } from "lucide-react";
 import { LocalPrivacyImage } from "@/components/LocalPrivacyImage";
 import { cities } from "@/data/cities";
 import {
@@ -173,7 +173,7 @@ function WeatherPixelIcon({
             <rect x="16" y="13" width="8" height="24" fill="#FFE6A1" />
             <rect x="16" y="25" width="4" height="4" fill="#6D7382" />
             <rect x="24" y="25" width="4" height="4" fill="#6D7382" />
-            <rect x="20" y="31" width="4" height="4" fill="#E8B8C2" />
+            <rect x="20" y="31" width="4" height="4" fill="#D4A574" />
           </>
         )}
         {isNight && (
@@ -182,8 +182,8 @@ function WeatherPixelIcon({
             <rect x="22" y="7" width="18" height="28" fill="#FFE08B" />
             <rect x="30" y="7" width="12" height="20" fill="#828BC4" />
             <rect x="10" y="10" width="4" height="4" fill="#FFD37A" />
-            <rect x="42" y="17" width="4" height="4" fill="#F5DCE0" />
-            <rect x="18" y="32" width="4" height="4" fill="#E8B8C2" />
+            <rect x="42" y="17" width="4" height="4" fill="#F0DEC4" />
+            <rect x="18" y="32" width="4" height="4" fill="#D4A574" />
           </>
         )}
         {kind === "fog" && (
@@ -192,8 +192,8 @@ function WeatherPixelIcon({
             <rect x="20" y="27" width="34" height="5" fill="#BAC5D4" />
             <rect x="8" y="36" width="40" height="5" fill="#D8DEE8" />
             <rect x="16" y="45" width="26" height="5" fill="#BAC5D4" />
-            <rect x="49" y="13" width="4" height="4" fill="#F2A6C0" />
-            <rect x="53" y="17" width="4" height="4" fill="#F2A6C0" />
+            <rect x="49" y="13" width="4" height="4" fill="#D4A574" />
+            <rect x="53" y="17" width="4" height="4" fill="#D4A574" />
           </>
         )}
         {kind === "wind" && (
@@ -204,8 +204,8 @@ function WeatherPixelIcon({
             <rect x="41" y="18" width="9" height="4" fill="#7A8FC5" />
             <rect x="33" y="30" width="13" height="4" fill="#7A8FC5" />
             <rect x="50" y="42" width="5" height="4" fill="#7A8FC5" />
-            <rect x="51" y="13" width="4" height="4" fill="#F2A6C0" />
-            <rect x="55" y="17" width="4" height="4" fill="#F2A6C0" />
+            <rect x="51" y="13" width="4" height="4" fill="#D4A574" />
+            <rect x="55" y="17" width="4" height="4" fill="#D4A574" />
           </>
         )}
         {hasCloud && (
@@ -249,7 +249,7 @@ function WeatherFrame(props: SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 128 8" aria-hidden="true" {...props}>
       <rect x="0" y="3" width="128" height="2" fill="#D8DDD8" opacity="0.45" />
-      <rect x="14" y="2" width="14" height="4" fill="#F5DCE0" opacity="0.72" />
+      <rect x="14" y="2" width="14" height="4" fill="#F0DEC4" opacity="0.72" />
       <rect x="88" y="2" width="8" height="4" fill="#D6E8F0" opacity="0.82" />
     </svg>
   );
@@ -379,35 +379,12 @@ function DateTimeCard() {
           </p>
         </div>
         <div className="text-right">
-          <CalendarDays className="ml-auto h-4 w-4 text-[#E8B8C2]" />
+          <CalendarDays className="ml-auto h-4 w-4 text-[#D4A574]" />
           <p className="mt-2 text-xs font-semibold text-[#5A6670]/64">
             {now ? `${formatDate(now)} ${formatWeekday(now)}` : "加载中"}
           </p>
         </div>
       </div>
-    </div>
-  );
-}
-
-function TogetherDaysCard() {
-  const settings = useAppSettings();
-  const startDate = settings.anniversaryDate ?? defaultAnniversaryDate;
-  const label = settings.anniversaryLabel ?? defaultAnniversaryLabel;
-  const days = daysTogether(startDate);
-
-  return (
-    <div className="mt-3 rounded-[8px] border border-[#D8DDD8]/70 bg-[#FAFBF7]/62 px-4 py-3 text-[#5A6670] shadow-[0_10px_24px_rgba(90,102,112,0.05)]">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold text-[#5A6670]/58">纪念日</p>
-          <p className="mt-1 text-sm font-semibold text-[#5A6670]">{label}</p>
-        </div>
-        <div className="flex items-end gap-1.5">
-          <span className="text-2xl font-semibold leading-none text-[#E8B8C2]">{days}</span>
-          <span className="pb-0.5 text-sm font-semibold text-[#5A6670]/56">天</span>
-        </div>
-      </div>
-      <p className="mt-1 truncate text-xs text-[#5A6670]/45">从 {startDate} 开始</p>
     </div>
   );
 }
@@ -419,12 +396,12 @@ function AlbumProgressCard() {
 
   return (
     <Link
-      className="group mt-3 block rounded-[8px] border border-[#D8DDD8]/70 bg-[#FAFBF7]/62 px-4 py-3 text-[#5A6670] shadow-[0_10px_24px_rgba(90,102,112,0.05)] transition hover:-translate-y-0.5 hover:border-[#F5DCE0] hover:bg-white/72"
+      className="group mt-3 block rounded-[8px] border border-[#D8DDD8]/70 bg-[#FAFBF7]/62 px-4 py-3 text-[#5A6670] shadow-[0_10px_24px_rgba(90,102,112,0.05)] transition hover:-translate-y-0.5 hover:border-[#F0DEC4] hover:bg-white/72"
       href="/memories"
     >
       <div className="flex items-center justify-between gap-3">
         <span className="flex min-w-0 items-center gap-3">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[8px] border border-[#F5DCE0]/80 bg-[#F5DCE0]/42 text-[#E8B8C2] transition group-hover:bg-[#F5DCE0]/68">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[8px] border border-[#F0DEC4]/80 bg-[#F0DEC4]/42 text-[#D4A574] transition group-hover:bg-[#F0DEC4]/68">
             <Images className="h-4 w-4" />
           </span>
           <span className="min-w-0">
@@ -432,7 +409,7 @@ function AlbumProgressCard() {
             <span className="mt-0.5 block truncate text-xs text-[#5A6670]/48">看全部照片</span>
           </span>
         </span>
-        <span className="text-lg leading-none text-[#5A6670]/34 transition group-hover:translate-x-0.5 group-hover:text-[#E8B8C2]">
+        <span className="text-lg leading-none text-[#5A6670]/34 transition group-hover:translate-x-0.5 group-hover:text-[#D4A574]">
           →
         </span>
       </div>
@@ -440,10 +417,10 @@ function AlbumProgressCard() {
       <div className="mt-4 border-t border-[#D8DDD8]/54 pt-4">
         <div className="mb-3 flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold text-[#5A6670]">我们的进度</p>
-            <p className="mt-0.5 text-xs text-[#5A6670]/52">Map of Us</p>
+            <p className="text-sm font-semibold text-[#5A6670]">打卡进度</p>
+            <p className="mt-0.5 text-xs text-[#5A6670]/52">Map of Memories</p>
           </div>
-          <Heart className="h-5 w-5 fill-[#F5DCE0] text-[#E8B8C2]" />
+          <Heart className="h-5 w-5 fill-[#F0DEC4] text-[#D4A574]" />
         </div>
 
         <div className="space-y-3">
@@ -451,13 +428,13 @@ function AlbumProgressCard() {
             <div className="flex items-end justify-between gap-3">
               <div className="text-sm text-[#5A6670]/68">已点亮省份</div>
               <div className="text-sm font-semibold text-[#5A6670]">
-                <span className="text-xl text-[#E8B8C2]">{progress.provinceCount}</span>
+                <span className="text-xl text-[#D4A574]">{progress.provinceCount}</span>
                 <span className="ml-1 text-[#5A6670]/46">/ {TOTAL_PROVINCES}</span>
               </div>
             </div>
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#D8DDD8]/48">
               <div
-                className="h-full rounded-full bg-[#E8B8C2] shadow-[0_0_12px_rgba(232,184,194,0.45)]"
+                className="h-full rounded-full bg-[#D4A574] shadow-[0_0_12px_rgba(212,165,116,0.45)]"
                 style={{ width: `${provincePercent}%` }}
               />
             </div>
@@ -502,13 +479,12 @@ function CoupleLogo() {
           alt="我们的拼图头像 logo"
           fill
           sizes="208px"
-          className={`object-contain transition-transform duration-300 ease-out ${
-            activeHead === "left"
-              ? "scale-[1.08] origin-[33%_47%]"
-              : activeHead === "right"
-                ? "scale-[1.08] origin-[69%_45%]"
-                : "scale-100"
-          }`}
+          className={`object-contain transition-transform duration-300 ease-out ${activeHead === "left"
+            ? "scale-[1.08] origin-[33%_47%]"
+            : activeHead === "right"
+              ? "scale-[1.08] origin-[69%_45%]"
+              : "scale-100"
+            }`}
         />
         <button
           className="absolute left-[15%] top-[23%] h-[42%] w-[31%] rounded-full outline-none transition hover:scale-[1.04] focus-visible:ring-2 focus-visible:ring-[#A8C8DC]/70 active:scale-[1.08]"
@@ -517,7 +493,7 @@ function CoupleLogo() {
           onClick={() => popHead("left")}
         />
         <button
-          className="absolute right-[11%] top-[21%] h-[45%] w-[34%] rounded-full outline-none transition hover:scale-[1.04] focus-visible:ring-2 focus-visible:ring-[#E8B8C2]/70 active:scale-[1.08]"
+          className="absolute right-[11%] top-[21%] h-[45%] w-[34%] rounded-full outline-none transition hover:scale-[1.04] focus-visible:ring-2 focus-visible:ring-[#D4A574]/70 active:scale-[1.08]"
           type="button"
           aria-label="放大右边头像"
           onClick={() => popHead("right")}
@@ -573,9 +549,9 @@ export function ProgressBadge() {
 
   return (
     <div className="ml-5 hidden items-center gap-2 rounded-[8px] border border-[#D8DDD8]/90 bg-[#FAFBF7]/70 px-4 py-2.5 text-sm text-[#5A6670]/76 shadow-[0_8px_24px_rgba(90,102,112,0.08)] backdrop-blur sm:flex">
-      <Heart className="h-4 w-4 fill-[#F5DCE0] text-[#E8B8C2]" />
+      <Star className="h-4 w-4 fill-[#FFD700] text-[#FFA500]" />
       <span>已点亮</span>
-      <strong className="font-semibold text-[#E8B8C2]">{progress.provinceCount}</strong>
+      <strong className="font-semibold text-[#D4A574]">{progress.provinceCount}</strong>
       <span>/ {TOTAL_PROVINCES} 省份</span>
     </div>
   );
@@ -586,7 +562,7 @@ export function LegendProgress() {
 
   return (
     <div className="flex w-fit items-center gap-3 rounded-[8px] border border-[#D8DDD8]/80 bg-[#FAFBF7]/70 px-5 py-3 text-sm text-[#5A6670]/80 shadow-[0_10px_28px_rgba(90,102,112,0.08)] backdrop-blur">
-      <Heart className="h-4 w-4 fill-[#F5DCE0] text-[#E8B8C2]" />
+      <Star className="h-4 w-4 fill-[#FFD700] text-[#FFA500]" />
       <span>
         <strong className="font-semibold text-[#5A6670]">{progress.provinceCount}</strong> /{" "}
         {TOTAL_PROVINCES} provinces explored
@@ -601,7 +577,6 @@ export function StatsPanel({ children }: Readonly<{ children: ReactNode }>) {
       <DateTimeCard />
       <WeatherCard />
       {children}
-      <TogetherDaysCard />
       <AlbumProgressCard />
       <CoupleLogo />
     </aside>
@@ -653,8 +628,8 @@ export function ProvinceProgressBadge({
 
   return (
     <div className="hidden items-center gap-2 rounded-[8px] border border-[#D8DDD8]/90 bg-[#FAFBF7]/70 px-4 py-2.5 text-sm text-[#5A6670]/76 shadow-[0_8px_24px_rgba(90,102,112,0.08)] backdrop-blur sm:flex">
-      <Heart className="h-4 w-4 fill-[#F5DCE0] text-[#E8B8C2]" />
-      <strong className="font-semibold text-[#E8B8C2]">{count}</strong>
+      <Heart className="h-4 w-4 fill-[#F0DEC4] text-[#D4A574]" />
+      <strong className="font-semibold text-[#D4A574]">{count}</strong>
       <span>/ {total} cities</span>
     </div>
   );

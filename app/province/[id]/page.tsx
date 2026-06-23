@@ -59,7 +59,7 @@ export default async function ProvincePage({ params }: ProvincePageProps) {
 
         <div className="absolute bottom-8 left-6 z-40 rounded-[8px] border border-[#D8DDD8]/80 bg-[#FAFBF7]/76 px-5 py-4 text-sm text-[#5A6670]/78 shadow-[0_10px_28px_rgba(90,102,112,0.08)] backdrop-blur sm:left-9">
           <div className="flex items-center gap-3">
-            <span className="h-3.5 w-3.5 rounded-full bg-[#E8B8C2] shadow-[0_0_10px_rgba(232,184,194,0.55)]" />
+            <span className="h-3.5 w-3.5 rounded-full bg-[#D4A574] shadow-[0_0_10px_rgba(212,165,116,0.55)]" />
             <span>已探索</span>
           </div>
           <div className="mt-3 flex items-center gap-3">

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -120,10 +120,10 @@ export default function RandomPhotoCard() {
 
   return (
     <aside className="absolute bottom-[4.75rem] right-[2.5rem] z-30 hidden w-[248px] rotate-[-1.5deg] xl:block">
-      <div className="rounded-[8px] border border-[#D8DDD8]/80 bg-[#FAFBF7]/86 p-3 shadow-[0_22px_58px_rgba(90,102,112,0.15)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:rotate-0 hover:border-[#F5DCE0]">
+      <div className="rounded-[8px] border border-[#D8DDD8]/80 bg-[#FAFBF7]/86 p-3 shadow-[0_22px_58px_rgba(90,102,112,0.15)] backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:rotate-0 hover:border-[#F0DEC4]">
         <div className="mb-2.5 flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[6px] border border-[#F5DCE0] bg-[#F5DCE0]/62 text-[#E8B8C2] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[6px] border border-[#F0DEC4] bg-[#F0DEC4]/62 text-[#D4A574] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]">
               <Camera className="h-4 w-4" />
             </span>
             <div className="min-w-0">
@@ -169,7 +169,7 @@ export default function RandomPhotoCard() {
           <div className="rounded-[6px] border border-dashed border-[#D8DDD8]/90 bg-[#FAFBF7]/72 p-3">
             <div className="grid aspect-[4/3] place-items-center rounded-[5px] bg-[#D6E8F0]/34 text-center">
               <div>
-                <Camera className="mx-auto h-7 w-7 text-[#E8B8C2]" />
+                <Camera className="mx-auto h-7 w-7 text-[#D4A574]" />
                 <p className="mt-2 text-sm font-semibold text-[#5A6670]">相框在等照片</p>
                 <p className="mt-1 text-xs leading-5 text-[#5A6670]/52">点一座城市写回忆后，这里会随机展示。</p>
               </div>

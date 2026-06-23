@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -107,17 +107,17 @@ export default function RecentMemories() {
     <div className="mt-5">
       <div className="flex items-end justify-between gap-3">
         <div>
-          <p className="text-sm font-semibold text-[#5A6670]">随机记忆</p>
-          <p className="mt-0.5 text-xs text-[#5A6670]/50">随机推荐三段，点一下回到那座城</p>
+          <p className="text-sm font-semibold text-[#5A6670]">闅忔満璁板繂</p>
+          <p className="mt-0.5 text-xs text-[#5A6670]/50">闅忔満鎺ㄨ崘涓夋锛岀偣涓€涓嬪洖鍒伴偅搴у煄</p>
         </div>
-        <Heart className="h-4 w-4 fill-[#F5DCE0] text-[#E8B8C2]" />
+        <Heart className="h-4 w-4 fill-[#F0DEC4] text-[#D4A574]" />
       </div>
       <div className="mt-3 space-y-2">
         {memoryItems.length > 0 ? (
           memoryItems.map(({ memory, city }) => (
             <Link
               key={memory.id}
-              className="group block rounded-[8px] border border-transparent p-1.5 transition hover:border-[#F5DCE0] hover:bg-[#FAFBF7]/72 hover:shadow-[0_10px_24px_rgba(90,102,112,0.07)]"
+              className="group block rounded-[8px] border border-transparent p-1.5 transition hover:border-[#F0DEC4] hover:bg-[#FAFBF7]/72 hover:shadow-[0_10px_24px_rgba(90,102,112,0.07)]"
               href={city ? `/province/${city.provinceId}?city=${memory.cityId}` : "/map"}
             >
               <article className="flex items-center gap-2.5">
@@ -140,17 +140,18 @@ export default function RecentMemories() {
           ))
         ) : (
           <div className="rounded-[8px] border border-dashed border-[#D8DDD8] bg-[#FAFBF7]/52 px-4 py-5 text-sm leading-6 text-[#5A6670]/58">
-            还没有回忆。先在地图上点一座城市，写下第一段，它就会出现在随机推荐里。
+            杩樻病鏈夊洖蹇嗐€傚厛鍦ㄥ湴鍥句笂鐐逛竴搴у煄甯傦紝鍐欎笅绗竴娈碉紝瀹冨氨浼氬嚭鐜板湪闅忔満鎺ㄨ崘閲屻€?
           </div>
         )}
       </div>
       <Link
-        className="mt-4 flex w-full items-center justify-between rounded-[8px] border border-[#D8DDD8]/70 bg-[#FAFBF7]/62 px-4 py-2.5 text-sm font-semibold text-[#5A6670]/72 transition hover:border-[#F5DCE0] hover:text-[#E8B8C2] hover:shadow-[0_10px_24px_rgba(90,102,112,0.07)]"
+        className="mt-4 flex w-full items-center justify-between rounded-[8px] border border-[#D8DDD8]/70 bg-[#FAFBF7]/62 px-4 py-2.5 text-sm font-semibold text-[#5A6670]/72 transition hover:border-[#F0DEC4] hover:text-[#D4A574] hover:shadow-[0_10px_24px_rgba(90,102,112,0.07)]"
         href="/memories"
       >
-        查看全部
+        鏌ョ湅鍏ㄩ儴
         <ArrowRight className="h-4 w-4" />
       </Link>
     </div>
   );
 }
+

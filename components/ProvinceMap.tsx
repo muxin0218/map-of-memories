@@ -59,8 +59,8 @@ const colors = {
   cream: "#FAFBF7",
   dim: "#D8DDD8",
   ink: "#5A6670",
-  sakura: "#F5DCE0",
-  bloom: "#E8B8C2",
+  sakura: "#F0DEC4",
+  bloom: "#D4A574",
   mist: "#D6E8F0",
   sky: "#A8C8DC",
 };
@@ -875,7 +875,7 @@ export default function ProvinceMap({ province, width = 1120, height = 760 }: Pr
           {Math.round(camera.scale * 100)}%
         </span>
         <button
-          className="grid h-9 w-9 place-items-center rounded-[7px] text-[#5A6670] transition hover:bg-[#F5DCE0]/55"
+          className="grid h-9 w-9 place-items-center rounded-[7px] text-[#5A6670] transition hover:bg-[#F0DEC4]/55"
           type="button"
           onClick={() => zoomFromCenter(1.12)}
           aria-label="放大地图"
@@ -913,7 +913,7 @@ export default function ProvinceMap({ province, width = 1120, height = 760 }: Pr
               <button
                 key={city.id}
                 className={`flex w-full items-center justify-between gap-3 rounded-[7px] px-3 py-2 text-left text-sm transition ${selected
-                  ? "bg-[#F5DCE0] text-[#E8B8C2] shadow-[0_8px_18px_rgba(232,184,194,0.16)]"
+                  ? "bg-[#F0DEC4] text-[#D4A574] shadow-[0_8px_18px_rgba(212,165,116,0.16)]"
                   : "text-[#5A6670]/78 hover:bg-[#D6E8F0]/34"
                   }`}
                 type="button"
@@ -921,12 +921,12 @@ export default function ProvinceMap({ province, width = 1120, height = 760 }: Pr
               >
                 <span className="flex min-w-0 items-center gap-2">
                   <span
-                    className={`h-2.5 w-2.5 shrink-0 rounded-full border-2 border-[#FAFBF7] ${lit ? "bg-[#E8B8C2] shadow-[0_0_10px_rgba(232,184,194,0.55)]" : "bg-[#D8DDD8]"
+                    className={`h-2.5 w-2.5 shrink-0 rounded-full border-2 border-[#FAFBF7] ${lit ? "bg-[#D4A574] shadow-[0_0_10px_rgba(212,165,116,0.55)]" : "bg-[#D8DDD8]"
                       }`}
                   />
                   <span className="truncate font-semibold">{city.name}</span>
                 </span>
-                <span className={`shrink-0 text-[11px] ${lit ? "text-[#E8B8C2]/80" : "text-[#5A6670]/40"}`}>
+                <span className={`shrink-0 text-[11px] ${lit ? "text-[#D4A574]/80" : "text-[#5A6670]/40"}`}>
                   {lit ? "已去过" : "未去过"}
                 </span>
               </button>
@@ -967,7 +967,7 @@ function CityMarker({ city, lit, selected }: Readonly<{ city: City; lit: boolean
       <span className="relative block h-full w-full">
         <span
           className={`absolute block rounded-full border-2 border-[#FAFBF7] transition duration-300 ${lit
-            ? "bg-[#E8B8C2] shadow-[0_0_12px_rgba(232,184,194,0.7)]"
+            ? "bg-[#D4A574] shadow-[0_0_12px_rgba(212,165,116,0.7)]"
             : "bg-[#D8DDD8] shadow-[0_4px_10px_rgba(90,102,112,0.08)]"
             }`}
           style={{
@@ -979,7 +979,7 @@ function CityMarker({ city, lit, selected }: Readonly<{ city: City; lit: boolean
         />
         <span
           className={`absolute flex items-center gap-1.5 whitespace-nowrap rounded-full bg-[#FAFBF7]/92 px-3 py-1.5 text-xs font-semibold shadow-[0_8px_18px_rgba(90,102,112,0.10)] backdrop-blur transition duration-200 ${lit
-            ? "text-[#E8B8C2] opacity-100"
+            ? "text-[#D4A574] opacity-100"
             : "text-[#5A6670]/62 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
             }`}
           style={{
@@ -1011,7 +1011,7 @@ function CityMarker({ city, lit, selected }: Readonly<{ city: City; lit: boolean
       <span
         className={`absolute flex items-center whitespace-nowrap rounded-full bg-[#FAFBF7]/88 font-semibold shadow-[0_8px_18px_rgba(90,102,112,0.10)] backdrop-blur transition duration-200 ${compactLandmark ? "gap-1.5 px-3 py-1.5 text-xs" : "gap-2 px-4 py-2 text-sm"
           } ${compactLandmark && !lit ? "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100" : "opacity-100"
-          } ${lit ? "text-[#E8B8C2]" : "text-[#5A6670]/58"}
+          } ${lit ? "text-[#D4A574]" : "text-[#5A6670]/58"}
         }`}
         style={{
           left: `calc(50% + ${layout.labelX}px)`,
@@ -1021,13 +1021,13 @@ function CityMarker({ city, lit, selected }: Readonly<{ city: City; lit: boolean
         <span
           className={`rounded-full border-2 border-[#FAFBF7] ${compactLandmark ? "h-2 w-2" : "h-2.5 w-2.5"
             } ${lit
-              ? "bg-[#E8B8C2] shadow-[0_0_10px_rgba(232,184,194,0.65)]"
+              ? "bg-[#D4A574] shadow-[0_0_10px_rgba(212,165,116,0.65)]"
               : "bg-[#D8DDD8]"
             }`}
         />
         {city.name}
         {city.nameEn !== city.name && (
-          <span className={lit ? "font-normal text-[#E8B8C2]/80" : "font-normal text-[#5A6670]/42"}>
+          <span className={lit ? "font-normal text-[#D4A574]/80" : "font-normal text-[#5A6670]/42"}>
             {city.nameEn}
           </span>
         )}
@@ -1382,7 +1382,7 @@ function MemoryCard({
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="flex items-center gap-2 text-xl font-semibold">
-            <span className={`h-3 w-3 rounded-sm ${isLit ? "bg-[#E8B8C2]" : "bg-[#D8DDD8]"}`} />
+            <span className={`h-3 w-3 rounded-sm ${isLit ? "bg-[#D4A574]" : "bg-[#D8DDD8]"}`} />
             {city.name}
             <span className="text-sm font-normal text-[#5A6670]/62">{city.nameEn}</span>
           </h2>
@@ -1422,7 +1422,7 @@ function MemoryCard({
           ] as const).map(([tab, label]) => (
             <button
               key={tab}
-              className={`flex-1 rounded-[7px] px-3 py-2 text-center transition ${activeTab === tab ? "bg-[#F5DCE0] text-[#E8B8C2]" : "hover:bg-[#D6E8F0]/30"
+              className={`flex-1 rounded-[7px] px-3 py-2 text-center transition ${activeTab === tab ? "bg-[#F0DEC4] text-[#D4A574]" : "hover:bg-[#D6E8F0]/30"
                 }`}
               type="button"
               onClick={() => setActiveTab(tab)}
@@ -1467,7 +1467,7 @@ function MemoryCard({
               </button>
               {hasCustomLandmark && (
                 <button
-                  className="grid h-8 w-8 place-items-center rounded-[6px] border border-[#F5DCE0] text-[#E8B8C2] transition hover:bg-[#F5DCE0]/45 disabled:opacity-45"
+                  className="grid h-8 w-8 place-items-center rounded-[6px] border border-[#F0DEC4] text-[#D4A574] transition hover:bg-[#F0DEC4]/45 disabled:opacity-45"
                   type="button"
                   onClick={handleDeleteLandmark}
                   disabled={landmarkSaving || !isAdmin}
@@ -1477,7 +1477,7 @@ function MemoryCard({
                 </button>
               )}
             </div>
-            {landmarkError && <p className="mt-2 text-xs text-[#E8B8C2]">{landmarkError}</p>}
+            {landmarkError && <p className="mt-2 text-xs text-[#D4A574]">{landmarkError}</p>}
           </div>
 
           {showMemory && (
@@ -1514,8 +1514,8 @@ function MemoryCard({
                   <button
                     key={`${memory?.id ?? city.id}-photo-${index}`}
                     className={`group relative aspect-square overflow-hidden rounded-[4px] border bg-[#D6E8F0] transition ${isCover
-                      ? "border-[#E8B8C2] shadow-[0_0_0_2px_rgba(245,220,224,0.75)]"
-                      : "border-[#D8DDD8] hover:border-[#E8B8C2]"
+                      ? "border-[#D4A574] shadow-[0_0_0_2px_rgba(240,222,196,0.75)]"
+                      : "border-[#D8DDD8] hover:border-[#D4A574]"
                       }`}
                     type="button"
                     onClick={() => handleSetCover(photo)}
@@ -1525,7 +1525,7 @@ function MemoryCard({
                     <MemoryImage src={photo} alt={`${city.name} memory photo ${index + 1}`} fit="cover" />
                     <span
                       className={`absolute inset-x-1 bottom-1 rounded-[4px] bg-[#FAFBF7]/90 px-1.5 py-1 text-[10px] font-medium shadow-[0_4px_10px_rgba(90,102,112,0.10)] transition ${isCover
-                        ? "text-[#E8B8C2] opacity-100"
+                        ? "text-[#D4A574] opacity-100"
                         : "text-[#5A6670]/68 opacity-0 group-hover:opacity-100"
                         }`}
                     >
@@ -1536,7 +1536,7 @@ function MemoryCard({
               })}
             </div>
           )}
-          {coverError && <p className="mt-2 text-xs text-[#E8B8C2]">{coverError}</p>}
+          {coverError && <p className="mt-2 text-xs text-[#D4A574]">{coverError}</p>}
 
           <p className="mt-4 text-sm leading-6 text-[#5A6670]/82">
             {memory?.text ?? "写下第一段回忆后，这座城市会被点亮。"}
@@ -1553,7 +1553,7 @@ function MemoryCard({
                 编辑
               </button>
               <button
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-[6px] border border-[#F5DCE0] px-3 py-2 text-xs font-medium text-[#E8B8C2] transition hover:bg-[#F5DCE0]/55 disabled:opacity-45"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-[6px] border border-[#F0DEC4] px-3 py-2 text-xs font-medium text-[#D4A574] transition hover:bg-[#F0DEC4]/55 disabled:opacity-45"
                 type="button"
                 onClick={() => handleDelete(memory)}
                 disabled={!isAdmin || deletingMemoryId === memory.id}
@@ -1563,7 +1563,7 @@ function MemoryCard({
               </button>
             </div>
           )}
-          {deleteError && <p className="mt-2 text-xs text-[#E8B8C2]">{deleteError}</p>}
+          {deleteError && <p className="mt-2 text-xs text-[#D4A574]">{deleteError}</p>}
         </>
       )}
 
@@ -1608,7 +1608,7 @@ function MemoryCard({
                     <p className="text-xs font-semibold text-[#5A6670]/70">{record.date}</p>
                     <div className="flex items-center gap-1.5">
                       {recordIndex === 0 && (
-                        <span className="rounded-full bg-[#F5DCE0]/82 px-2 py-0.5 text-[10px] font-medium text-[#E8B8C2]">
+                        <span className="rounded-full bg-[#F0DEC4]/82 px-2 py-0.5 text-[10px] font-medium text-[#D4A574]">
                           最新
                         </span>
                       )}
@@ -1624,7 +1624,7 @@ function MemoryCard({
                             <Pencil className="h-3.5 w-3.5" />
                           </button>
                           <button
-                            className="grid h-6 w-6 place-items-center rounded-[5px] text-[#5A6670]/46 transition hover:bg-[#F5DCE0]/46 hover:text-[#E8B8C2] disabled:opacity-40"
+                            className="grid h-6 w-6 place-items-center rounded-[5px] text-[#5A6670]/46 transition hover:bg-[#F0DEC4]/46 hover:text-[#D4A574] disabled:opacity-40"
                             type="button"
                             onClick={() => handleDelete(record)}
                             disabled={!isAdmin || deletingMemoryId === record.id}
@@ -1687,7 +1687,7 @@ function MemoryCard({
               <label className="block">
                 <span className="text-xs font-medium text-[#5A6670]/70">日期</span>
                 <input
-                  className="mt-1.5 w-full rounded-[6px] border border-[#D8DDD8] bg-[#FAFBF7] px-3 py-2 text-sm text-[#5A6670] placeholder:text-[#5A6670]/40 outline-none transition focus:border-[#E8B8C2]"
+                  className="mt-1.5 w-full rounded-[6px] border border-[#D8DDD8] bg-[#FAFBF7] px-3 py-2 text-sm text-[#5A6670] placeholder:text-[#5A6670]/40 outline-none transition focus:border-[#D4A574]"
                   type="text"
                   value={date}
                   onChange={(event) => setDate(event.target.value)}
@@ -1698,7 +1698,7 @@ function MemoryCard({
                   disabled={!isAdmin}
                 />
                 {dateInvalid && (
-                  <span className="mt-1.5 block text-xs text-[#E8B8C2]">
+                  <span className="mt-1.5 block text-xs text-[#D4A574]">
                     请使用 2024.05.20 或 2024.5.20 格式
                   </span>
                 )}
@@ -1712,7 +1712,7 @@ function MemoryCard({
                   </span>
                 </span>
                 <textarea
-                  className="mt-1.5 w-full resize-none rounded-[6px] border border-[#D8DDD8] bg-[#FAFBF7] px-3 py-2 text-sm leading-6 text-[#5A6670] placeholder:text-[#5A6670]/40 outline-none transition focus:border-[#E8B8C2]"
+                  className="mt-1.5 w-full resize-none rounded-[6px] border border-[#D8DDD8] bg-[#FAFBF7] px-3 py-2 text-sm leading-6 text-[#5A6670] placeholder:text-[#5A6670]/40 outline-none transition focus:border-[#D4A574]"
                   rows={3}
                   value={text}
                   onChange={(event) => setText(event.target.value)}
@@ -1734,7 +1734,7 @@ function MemoryCard({
                   disabled={!isAdmin}
                 />
                 <button
-                  className="mt-1.5 flex w-full items-center justify-center gap-2 rounded-[6px] border border-dashed border-[#D8DDD8] bg-[#FAFBF7] px-3 py-3 text-sm text-[#5A6670]/70 transition hover:border-[#E8B8C2] hover:text-[#E8B8C2]"
+                  className="mt-1.5 flex w-full items-center justify-center gap-2 rounded-[6px] border border-dashed border-[#D8DDD8] bg-[#FAFBF7] px-3 py-3 text-sm text-[#5A6670]/70 transition hover:border-[#D4A574] hover:text-[#D4A574]"
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={!isAdmin}
@@ -1772,13 +1772,13 @@ function MemoryCard({
                   )}
                 </button>
                 {photoError && (
-                  <span className="mt-1.5 block text-xs text-[#E8B8C2]">{photoError}</span>
+                  <span className="mt-1.5 block text-xs text-[#D4A574]">{photoError}</span>
                 )}
               </div>
 
               <div className="sticky bottom-0 -mx-5 flex items-center gap-2 border-t border-[#D8DDD8]/70 bg-[#FAFBF7]/96 px-5 pb-1 pt-3 shadow-[0_-10px_18px_rgba(250,251,247,0.88)] backdrop-blur">
                 <button
-                  className="flex-1 rounded-[6px] bg-[#F5DCE0] px-3 py-2 text-sm font-medium text-[#E8B8C2] transition hover:bg-[#E8B8C2] hover:text-[#FAFBF7] disabled:cursor-not-allowed disabled:opacity-45"
+                  className="flex-1 rounded-[6px] bg-[#F0DEC4] px-3 py-2 text-sm font-medium text-[#D4A574] transition hover:bg-[#D4A574] hover:text-[#FAFBF7] disabled:cursor-not-allowed disabled:opacity-45"
                   type="button"
                   onClick={handleSave}
                   disabled={!canSave}
@@ -1797,7 +1797,7 @@ function MemoryCard({
                   取消
                 </button>
               </div>
-              {saveError && <p className="text-xs text-[#E8B8C2]">{saveError}</p>}
+              {saveError && <p className="text-xs text-[#D4A574]">{saveError}</p>}
             </div>
           </motion.div>
         )}

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
@@ -30,8 +30,8 @@ const colors = {
   cream: "#FAFBF7",
   dim: "#D8DDD8",
   ink: "#5A6670",
-  sakura: "#F5DCE0",
-  bloom: "#E8B8C2",
+  sakura: "#F0DEC4",
+  bloom: "#D4A574",
   sky: "#A8C8DC",
 };
 
@@ -192,7 +192,7 @@ export default function ChinaMap({ width = 1100, height = 860, className }: Chin
           </span>
         </div>
         <button
-          className="grid h-9 w-9 place-items-center rounded-full text-[#5A6670] transition hover:bg-[#F5DCE0]/55 disabled:opacity-35"
+          className="grid h-9 w-9 place-items-center rounded-full text-[#5A6670] transition hover:bg-[#F0DEC4]/55 disabled:opacity-35"
           type="button"
           onClick={() => setClampedZoom(zoom - 0.15)}
           disabled={zoom <= minZoom}
@@ -337,7 +337,7 @@ export default function ChinaMap({ width = 1100, height = 860, className }: Chin
               transform: "translate(14px, -50%)",
             }}
           >
-            <span className="mr-2 inline-block h-2 w-2 rounded-sm bg-[#E8B8C2]" />
+            <span className="mr-2 inline-block h-2 w-2 rounded-sm bg-[#D4A574]" />
             {hoveredPath.province.name}
             <span className="ml-2 text-[#5A6670]/60">{hoveredPath.province.nameEn}</span>
           </motion.div>
@@ -346,3 +346,4 @@ export default function ChinaMap({ width = 1100, height = 860, className }: Chin
     </motion.div>
   );
 }
+

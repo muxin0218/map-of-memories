@@ -1,11 +1,11 @@
-import { NextResponse, type NextRequest } from "next/server";
+﻿import { NextResponse, type NextRequest } from "next/server";
 import { cities } from "@/data/cities";
 import type { Memory } from "@/data/memories";
 import {
+  ensureSchema,
   isDbConfigured,
-  readJsonValue,
+  query,
   uploadDataImage,
-  writeJsonValue,
 } from "@/lib/server/db";
 import { isLocalPrivacyRequest, localPrivacyImagePlaceholder } from "@/lib/localPrivacy";
 import { requireAdminSession, requireSiteSession } from "@/lib/server/auth";
@@ -13,13 +13,17 @@ import { requireAdminSession, requireSiteSession } from "@/lib/server/auth";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-type RawMemoryStore = Record<string, Memory | Memory[]>;
-type MemoryStore = Record<string, Memory[]>;
-
-const memoryStoreKey = "memories";
 const memoryTextMaxLength = 80;
 const imageMaxLength = 12_000_000;
 const maxPhotosPerMemory = 24;
+
+// Ensure schema on first request
+let schemaEnsured = false;
+async function ensureDb() {
+  if (!schemaEnsured) { await ensureSchema(); schemaEnsured = true; }
+}
+
+// ---- Date helpers (same as before) ----
 
 const normalizeMemoryDate = (value: string) => {
   const match = value.match(/^(\d{4})\.(\d{1,2})\.(\d{1,2})$/);
@@ -33,6 +37,12 @@ const normalizeMemoryDate = (value: string) => {
   if (!isValid) return null;
   return `${rawYear}.${String(month).padStart(2, "0")}.${String(day).padStart(2, "0")}`;
 };
+
+function dateToSql(dateStr: string): string {
+  return dateStr.replace(/\./g, "-");
+}
+
+// ---- Validation helpers (same as before) ----
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -49,41 +59,75 @@ const normalizePhotos = (value: unknown) => {
   return value.filter((photo): photo is string => typeof photo === "string" && isAllowedImage(photo));
 };
 
-function normalizeStoredMemory(cityId: string, value: unknown): Memory[] {
-  const city = cities.find((candidate) => candidate.id === cityId);
-  if (!city) return [];
-  const entries = Array.isArray(value) ? value : [value];
-  return entries.flatMap((entry, index) => {
-    if (!isRecord(entry)) return [];
-    const date = typeof entry.date === "string" ? entry.date.trim() : "待添加日期";
-    const text = typeof entry.text === "string" && entry.text.trim().length > 0 ? entry.text.trim() : "这段回忆还等着我们慢慢写上。";
-    const storedImage = typeof entry.image === "string" && isAllowedImage(entry.image) ? entry.image : "";
-    const photos = normalizePhotos(entry.photos);
-    const image = storedImage || photos[0] || city.sprite;
-    const id = typeof entry.id === "string" ? entry.id : `${city.id}-local-${index}`;
-    const createdAt = typeof entry.createdAt === "string" ? entry.createdAt : new Date(0).toISOString();
-    return [{
-      id, cityId: city.id, city: city.name, cityEn: city.nameEn,
-      date, image, photos: photos.length > 0 ? photos : [image], text, createdAt,
-    }];
-  });
+// ---- DB helpers ----
+
+async function readAllMemories(): Promise<Memory[]> {
+  const rows = await query<{
+    id: string; city_id: string; city_name: string; city_en: string;
+    date: string; text: string; image: string; photos: string[];
+    draft: boolean; created_at: string;
+  }>("SELECT * FROM memories ORDER BY date DESC, created_at DESC");
+  return rows.map(rowToMemory);
 }
 
-function normalizeMemoryStore(store: RawMemoryStore): MemoryStore {
-  return Object.fromEntries(
-    Object.entries(store)
-      .map(([cityId, value]) => [cityId, normalizeStoredMemory(cityId, value)] as const)
-      .filter(([, memories]) => memories.length > 0),
+function rowToMemory(row: Record<string, unknown>): Memory {
+  const d = new Date(row.date as string);
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  return {
+    id: row.id as string,
+    cityId: row.city_id as string,
+    city: (row.city_name as string) ?? "",
+    cityEn: (row.city_en as string) ?? "",
+    date: `${y}.${m}.${day}`,
+    text: row.text as string,
+    image: row.image as string,
+    photos: (row.photos as string[]) ?? [],
+    createdAt: (row.created_at as string) ?? new Date(0).toISOString(),
+    draft: (row.draft as boolean) ?? false,
+  };
+}
+
+async function insertMemory(memory: Memory): Promise<void> {
+  await query(
+    `INSERT INTO memories (id, city_id, city_name, city_en, date, text, image, photos, draft, created_at)
+     VALUES ($1,$2,$3,$4,$5::date,$6,$7,$8::jsonb,$9,$10)
+     ON CONFLICT (id) DO UPDATE SET
+       city_name = EXCLUDED.city_name, city_en = EXCLUDED.city_en,
+       date = EXCLUDED.date, text = EXCLUDED.text, image = EXCLUDED.image,
+       photos = EXCLUDED.photos, draft = EXCLUDED.draft`,
+    [
+      memory.id, memory.cityId, memory.city, memory.cityEn,
+      dateToSql(memory.date), memory.text, memory.image,
+      JSON.stringify(memory.photos ?? []),
+      memory.draft ?? false, memory.createdAt ?? new Date().toISOString(),
+    ],
   );
 }
 
-async function readMemoryStore(): Promise<MemoryStore> {
-  return normalizeMemoryStore(await readJsonValue(memoryStoreKey, {}));
+async function updateMemory(id: string, updates: Record<string, unknown>): Promise<boolean> {
+  const setClauses: string[] = [];
+  const params: unknown[] = [];
+  let idx = 1;
+
+  if (updates.text !== undefined) { setClauses.push(`text = $${idx++}`); params.push(updates.text); }
+  if (updates.image !== undefined) { setClauses.push(`image = $${idx++}`); params.push(updates.image); }
+  if (updates.photos !== undefined) { setClauses.push(`photos = $${idx++}::jsonb`); params.push(JSON.stringify(updates.photos)); }
+  if (updates.date !== undefined) { setClauses.push(`date = $${idx++}::date`); params.push(dateToSql(updates.date as string)); }
+  if (updates.draft !== undefined) { setClauses.push(`draft = $${idx++}`); params.push(updates.draft); }
+
+  if (setClauses.length === 0) return true;
+  params.push(id);
+  await query(`UPDATE memories SET ${setClauses.join(", ")} WHERE id = $${idx}`, params);
+  return true;
 }
 
-async function writeMemoryStore(store: MemoryStore) {
-  await writeJsonValue(memoryStoreKey, store);
+async function deleteMemory(id: string): Promise<void> {
+  await query("DELETE FROM memories WHERE id = $1", [id]);
 }
+
+// ---- Image upload (same as before, calls db.uploadDataImage) ----
 
 async function uploadMemoryImages(memory: Memory): Promise<Memory> {
   const photos = await Promise.all(
@@ -98,6 +142,8 @@ async function uploadMemoryImages(memory: Memory): Promise<Memory> {
       : memory.image;
   return { ...memory, image, photos };
 }
+
+// ---- Payload parsers (same as before) ----
 
 function parseMemoryPayload(payload: unknown): Memory | null {
   if (!isRecord(payload) || !isRecord(payload.memory)) return null;
@@ -114,161 +160,189 @@ function parseMemoryPayload(payload: unknown): Memory | null {
   if (!city || !normalizedDate || trimmedText.length === 0 || trimmedText.length > memoryTextMaxLength || (typeof image === "string" && image.length > 0 && !isAllowedImage(image))) return null;
   const coverImage = photos[0] ?? image ?? city.sprite;
   return {
-    id: `${city.id}-${Date.now()}`,
+    id: `city-${cityId}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     cityId: city.id, city: city.name, cityEn: city.nameEn,
-    date: normalizedDate, image: coverImage,
-    photos: photos.length > 0 ? photos : [coverImage],
-    text: trimmedText, createdAt: new Date().toISOString(),
+    date: normalizedDate, image: coverImage, photos, text: trimmedText,
+    createdAt: new Date().toISOString(),
   };
 }
 
-function parseCoverPayload(payload: unknown) {
+function parseEditPayload(payload: unknown): { cityId: string; memoryId: string; updates: Record<string, unknown> } | null {
   if (!isRecord(payload)) return null;
-  const { cityId, memoryId, coverImage } = payload;
-  if (typeof cityId !== "string" || typeof memoryId !== "string" || typeof coverImage !== "string" || !isAllowedImage(coverImage)) return null;
-  return { cityId, memoryId, coverImage };
+  const memoryId = typeof payload.memoryId === "string" ? payload.memoryId : null;
+  const cityId = typeof payload.cityId === "string" ? payload.cityId : null;
+  const text = typeof payload.text === "string" ? payload.text.trim() : null;
+  const image = typeof payload.image === "string" ? payload.image : null;
+  const photos = normalizePhotos(payload.photos).slice(0, maxPhotosPerMemory);
+  if (!memoryId || !cityId) return null;
+  if (!text && !image && photos.length === 0) return null;
+  const updates: Record<string, unknown> = {};
+  if (text) { if (text.length > memoryTextMaxLength) return null; updates.text = text; }
+  if (image) { if (!isAllowedImage(image)) return null; updates.image = image; }
+  if (photos.length > 0) updates.photos = photos;
+  return { cityId, memoryId, updates };
 }
 
-function parseEditPayload(payload: unknown) {
-  if (!isRecord(payload) || !isRecord(payload.memory)) return null;
-  const cityId = payload.cityId;
-  const memoryId = payload.memoryId;
-  const date = payload.memory.date;
-  const text = payload.memory.text;
-  const image = payload.memory.image;
-  const photos = normalizePhotos(payload.memory.photos).slice(0, maxPhotosPerMemory);
-  if (typeof cityId !== "string" || typeof memoryId !== "string" || typeof date !== "string" || typeof text !== "string" || typeof image !== "string") return null;
-  const city = cities.find((candidate) => candidate.id === cityId);
-  const trimmedDate = date.trim();
-  const trimmedText = text.trim();
-  const normalizedDate = normalizeMemoryDate(trimmedDate);
-  if (!city || !normalizedDate || trimmedText.length === 0 || trimmedText.length > memoryTextMaxLength || !isAllowedImage(image)) return null;
-  const safePhotos = photos.length > 0 ? photos : [image];
-  const coverImage = safePhotos.includes(image) ? image : safePhotos[0];
-  return {
-    cityId: city.id, memoryId,
-    updates: { city: city.name, cityEn: city.nameEn, date: normalizedDate, text: trimmedText, image: coverImage, photos: safePhotos },
-  };
+function parseCoverPayload(payload: unknown): { cityId: string; memoryId: string; coverImage: string } | null {
+  if (!isRecord(payload) || typeof payload.cityId !== "string" || typeof payload.memoryId !== "string" || typeof payload.coverImage !== "string") return null;
+  return { cityId: payload.cityId, memoryId: payload.memoryId, coverImage: payload.coverImage };
 }
 
-function parseDeletePayload(payload: unknown) {
-  if (!isRecord(payload)) return null;
-  const { cityId, memoryId } = payload;
-  if (typeof cityId !== "string" || typeof memoryId !== "string") return null;
-  return { cityId, memoryId };
+function parseDeletePayload(payload: unknown): { cityId: string; memoryId: string } | null {
+  if (!isRecord(payload) || typeof payload.cityId !== "string" || typeof payload.memoryId !== "string") return null;
+  return { cityId: payload.cityId, memoryId: payload.memoryId };
 }
 
-const maskMemoryPhotos = (memories: MemoryStore): MemoryStore =>
-  Object.fromEntries(
-    Object.entries(memories).map(([cityId, cityMemories]) => [
-      cityId,
-      cityMemories.map((memory) => ({
-        ...memory,
-        image: localPrivacyImagePlaceholder,
-        photos: memory.photos?.map(() => localPrivacyImagePlaceholder) ?? [localPrivacyImagePlaceholder],
-      })),
-    ]),
+// ---- Mask helpers (same as before) ----
+
+function maskMemoryPhotos(memories: Memory[]): Memory[] {
+  return memories.map((memory) => ({
+    ...memory,
+    image: localPrivacyImagePlaceholder,
+    photos: memory.photos?.map(() => localPrivacyImagePlaceholder) ?? [localPrivacyImagePlaceholder],
+  }));
+}
+
+function maskMemoryStore(store: Record<string, Memory[]>): Record<string, Memory[]> {
+  return Object.fromEntries(
+    Object.entries(store).map(([cityId, memories]) => [cityId, maskMemoryPhotos(memories)]),
   );
+}
+
+// ---- Handlers ----
 
 export async function GET(request: NextRequest) {
   const authResponse = requireSiteSession(request);
   if (authResponse) return authResponse;
-  const memories = await readMemoryStore();
-  return NextResponse.json({ memories: isLocalPrivacyRequest(request) ? maskMemoryPhotos(memories) : memories });
+  await ensureDb();
+
+  const allRows = await readAllMemories();
+  // Group by cityId to maintain backward-compatible response shape
+  const store: Record<string, Memory[]> = {};
+  for (const m of allRows) {
+    if (!store[m.cityId]) store[m.cityId] = [];
+    store[m.cityId].push(m);
+  }
+
+  return NextResponse.json({ memories: isLocalPrivacyRequest(request) ? maskMemoryStore(store) : store });
 }
 
 export async function POST(request: NextRequest) {
   const authResponse = requireAdminSession(request);
   if (authResponse) return authResponse;
+  await ensureDb();
 
   const parsedMemory = parseMemoryPayload(await request.json().catch(() => null));
   if (!parsedMemory) return NextResponse.json({ error: "Invalid memory payload" }, { status: 400 });
 
   const memory = await uploadMemoryImages(parsedMemory);
-  const memories = await readMemoryStore();
-  const nextMemories = { ...memories, [memory.cityId]: [memory, ...(memories[memory.cityId] ?? [])] };
-  await writeMemoryStore(nextMemories);
-  return NextResponse.json({ memory, memories: nextMemories });
+  await insertMemory(memory);
+
+  const allRows = await readAllMemories();
+  const store: Record<string, Memory[]> = {};
+  for (const m of allRows) {
+    if (!store[m.cityId]) store[m.cityId] = [];
+    store[m.cityId].push(m);
+  }
+  return NextResponse.json({ memory, memories: store });
 }
 
 export async function PUT(request: NextRequest) {
   const authResponse = requireAdminSession(request);
   if (authResponse) return authResponse;
+  await ensureDb();
 
   const payload = await request.json().catch(() => null);
-  if (!isRecord(payload) || !isRecord(payload.memories)) return NextResponse.json({ error: "Invalid memory store payload" }, { status: 400 });
+  if (!isRecord(payload) || !isRecord(payload.memories)) {
+    return NextResponse.json({ error: "Invalid memory store payload" }, { status: 400 });
+  }
 
-  const normalizedMemories = normalizeMemoryStore(payload.memories as RawMemoryStore);
-  const nextMemories = Object.fromEntries(
-    await Promise.all(
-      Object.entries(normalizedMemories).map(async ([cityId, memories]) => [
-        cityId,
-        await Promise.all(memories.map((memory) => uploadMemoryImages(memory))),
-      ]),
-    ),
-  );
-  await writeMemoryStore(nextMemories);
-  return NextResponse.json({ memories: nextMemories });
+  // Process bulk update: upsert all memories from payload
+  for (const [cityId, entries] of Object.entries(payload.memories as Record<string, unknown>)) {
+    const city = cities.find((c) => c.id === cityId);
+    if (!city) continue;
+    const mems = Array.isArray(entries) ? entries : [entries];
+    for (const entry of mems) {
+      if (!isRecord(entry)) continue;
+      const memory: Memory = {
+        id: typeof entry.id === "string" ? entry.id : `${cityId}-bulk-${Date.now()}`,
+        cityId, city: city.name, cityEn: city.nameEn,
+        date: typeof entry.date === "string" ? entry.date : "待添加日期",
+        text: typeof entry.text === "string" ? entry.text.trim() : "",
+        image: typeof entry.image === "string" ? entry.image : city.sprite,
+        photos: normalizePhotos(entry.photos),
+        createdAt: typeof entry.createdAt === "string" ? entry.createdAt : new Date().toISOString(),
+        draft: entry.draft === true,
+      };
+      const uploaded = await uploadMemoryImages(memory);
+      await insertMemory(uploaded);
+    }
+  }
+
+  const allRows = await readAllMemories();
+  const store: Record<string, Memory[]> = {};
+  for (const m of allRows) {
+    if (!store[m.cityId]) store[m.cityId] = [];
+    store[m.cityId].push(m);
+  }
+  return NextResponse.json({ memories: store });
 }
 
 export async function PATCH(request: NextRequest) {
   const authResponse = requireAdminSession(request);
   if (authResponse) return authResponse;
+  await ensureDb();
 
   const rawPayload = await request.json().catch(() => null);
   const editPayload = parseEditPayload(rawPayload);
 
   if (editPayload) {
-    const memories = await readMemoryStore();
-    const cityMemories = memories[editPayload.cityId] ?? [];
-    const memoryIndex = cityMemories.findIndex((memory) => memory.id === editPayload.memoryId);
-    if (memoryIndex === -1) return NextResponse.json({ error: "Memory not found" }, { status: 404 });
+    const memory = (await query<{ id: string; city_id: string; city_name: string; city_en: string; date: string; text: string; image: string; photos: string[]; draft: boolean; created_at: string }>(
+      "SELECT * FROM memories WHERE id = $1", [editPayload.memoryId],
+    ))[0];
+    if (!memory) return NextResponse.json({ error: "Memory not found" }, { status: 404 });
 
-    const nextCityMemories = cityMemories.map((entry, index) =>
-      index === memoryIndex ? { ...entry, ...editPayload.updates } : entry,
-    );
-    nextCityMemories[memoryIndex] = await uploadMemoryImages(nextCityMemories[memoryIndex]);
-    const nextMemories = { ...memories, [editPayload.cityId]: nextCityMemories };
-    await writeMemoryStore(nextMemories);
-    return NextResponse.json({ memory: nextCityMemories[memoryIndex], memories: nextMemories });
+    await updateMemory(editPayload.memoryId, editPayload.updates);
+    const updated = (await query("SELECT * FROM memories WHERE id = $1", [editPayload.memoryId]))[0];
+    return NextResponse.json({ memory: rowToMemory(updated), memories: {} });
   }
 
   const payload = parseCoverPayload(rawPayload);
   if (!payload) return NextResponse.json({ error: "Invalid memory payload" }, { status: 400 });
 
-  const memories = await readMemoryStore();
-  const cityMemories = memories[payload.cityId] ?? [];
-  const memoryIndex = cityMemories.findIndex((memory) => memory.id === payload.memoryId);
-  if (memoryIndex === -1) return NextResponse.json({ error: "Memory not found" }, { status: 404 });
+  const existing = (await query("SELECT * FROM memories WHERE id = $1", [payload.memoryId]))[0];
+  if (!existing) return NextResponse.json({ error: "Memory not found" }, { status: 404 });
 
-  const memory = cityMemories[memoryIndex];
-  const photos = memory.photos?.length ? memory.photos : [memory.image];
-  if (!photos.includes(payload.coverImage)) return NextResponse.json({ error: "Cover image must be one of the memory photos" }, { status: 400 });
+  const photos = (existing.photos as string[]) ?? [];
+  const image = existing.image as string;
+  const allPhotos = photos.length > 0 ? photos : [image];
+  if (!allPhotos.includes(payload.coverImage)) {
+    return NextResponse.json({ error: "Cover image must be one of the memory photos" }, { status: 400 });
+  }
 
-  const nextCityMemories = cityMemories.map((entry, index) =>
-    index === memoryIndex ? { ...entry, image: payload.coverImage } : entry,
-  );
-  const nextMemories = { ...memories, [payload.cityId]: nextCityMemories };
-  await writeMemoryStore(nextMemories);
-  return NextResponse.json({ memory: nextCityMemories[memoryIndex], memories: nextMemories });
+  await query("UPDATE memories SET image = $1 WHERE id = $2", [payload.coverImage, payload.memoryId]);
+  const updated = (await query("SELECT * FROM memories WHERE id = $1", [payload.memoryId]))[0];
+  return NextResponse.json({ memory: rowToMemory(updated), memories: {} });
 }
 
 export async function DELETE(request: NextRequest) {
   const authResponse = requireAdminSession(request);
   if (authResponse) return authResponse;
+  await ensureDb();
 
   const payload = parseDeletePayload(await request.json().catch(() => null));
   if (!payload) return NextResponse.json({ error: "Invalid delete payload" }, { status: 400 });
 
-  const memories = await readMemoryStore();
-  const cityMemories = memories[payload.cityId] ?? [];
-  const memoryIndex = cityMemories.findIndex((memory) => memory.id === payload.memoryId);
-  if (memoryIndex === -1) return NextResponse.json({ error: "Memory not found" }, { status: 404 });
+  const existing = await query("SELECT id FROM memories WHERE id = $1", [payload.memoryId]);
+  if (existing.length === 0) return NextResponse.json({ error: "Memory not found" }, { status: 404 });
 
-  const nextCityMemories = cityMemories.filter((memory) => memory.id !== payload.memoryId);
-  const nextMemories = { ...memories };
-  if (nextCityMemories.length > 0) nextMemories[payload.cityId] = nextCityMemories;
-  else delete nextMemories[payload.cityId];
-  await writeMemoryStore(nextMemories);
-  return NextResponse.json({ memories: nextMemories });
+  await deleteMemory(payload.memoryId);
+
+  const allRows = await readAllMemories();
+  const store: Record<string, Memory[]> = {};
+  for (const m of allRows) {
+    if (!store[m.cityId]) store[m.cityId] = [];
+    store[m.cityId].push(m);
+  }
+  return NextResponse.json({ memories: store });
 }

@@ -13,7 +13,7 @@ type AuthPayload = {
   exp: number;
 };
 
-const secureCookie = process.env.NODE_ENV === "production" && process.env.MAP_OF_US_DESKTOP !== "1";
+const secureCookie = process.env.NODE_ENV === "production";
 
 const getSecret = () => process.env.AUTH_COOKIE_SECRET;
 

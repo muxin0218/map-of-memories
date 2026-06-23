@@ -1,68 +1,23 @@
 {
   "name": "map",
   "version": "0.1.1",
-  "description": "Local-first couple memory map desktop app",
+  "description": "Memory map web application for WebGIS",
   "author": "Map of Us",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3002",
-    "dev:keepalive": "bash scripts/dev-keepalive.sh",
-    "dev:daemon": "bash scripts/start-dev-daemon.sh",
     "build": "next build",
-    "desktop:prepare": "npm run build && node scripts/prepare-standalone.mjs",
-    "preview": "next start",
     "start": "next start",
-    "lint": "eslint",
-    "desktop": "electron electron/main.js",
-    "dist:dir": "npm run desktop:prepare && electron-builder --dir",
-    "dist:mac": "npm run desktop:prepare && electron-builder --mac dmg",
-    "dist:win": "npm run desktop:prepare && electron-builder --win nsis --x64"
-  },
-  "main": "electron/main.js",
-  "build": {
-    "appId": "com.mapofus.desktop",
-    "productName": "Map of Us",
-    "directories": {
-      "output": "dist"
-    },
-    "asar": false,
-    "npmRebuild": false,
-    "files": [
-      "!node_modules/**/*",
-      "electron/**/*",
-      ".next/standalone/**/*",
-      "package.json"
-    ],
-    "mac": {
-      "category": "public.app-category.lifestyle",
-      "target": [
-        "dmg"
-      ]
-    },
-    "dmg": {
-      "artifactName": "${productName}-${version}-${arch}.${ext}"
-    },
-    "win": {
-      "target": [
-        "nsis"
-      ]
-    },
-    "nsis": {
-      "oneClick": false,
-      "perMachine": false,
-      "allowToChangeInstallationDirectory": true,
-      "artifactName": "${productName}-${version}-${arch}-Setup.${ext}"
-    }
+    "preview": "next start",
+    "lint": "eslint"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.106.0",
     "@types/leaflet": "^1.9.21",
     "d3-geo": "^3.1.1",
     "framer-motion": "^12.39.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",
-    "pg": "^8.21.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-leaflet": "^5.0.0"
@@ -71,11 +26,8 @@
     "@tailwindcss/postcss": "^4",
     "@types/d3-geo": "^3.1.0",
     "@types/node": "^20",
-    "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "electron": "^42.3.0",
-    "electron-builder": "^26.8.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",

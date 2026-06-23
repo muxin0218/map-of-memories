@@ -50,3 +50,9 @@ data/*.backup-*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+# local app data (generated at runtime)
+data/memories.json
+data/checkins.json
+data/city-assets.json
+data/login-photos.json
+data/*.tmp

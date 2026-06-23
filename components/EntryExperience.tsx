@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { ArrowRight, Camera, Delete, Heart, KeyRound, LockKeyhole, MapPinned } from "lucide-react";
+import { ArrowRight, Camera, Delete, Star, Heart, KeyRound, LockKeyhole, MapPinned } from "lucide-react";
 import { LocalPrivacyBadge, LocalPrivacyImage } from "@/components/LocalPrivacyImage";
 import {
   appSettingsUpdatedEvent,
@@ -97,19 +97,11 @@ type Stamp = {
   photo: string;
 };
 
-function PixelHeart() {
+function PixelStar() {
   return (
-    <svg className="h-9 w-9 pixelated" viewBox="0 0 22 22" aria-hidden="true">
-      <path
-        d="M5 3h4v2h2V3h4v2h2v6h-2v2h-2v2h-2v2H9v-2H7v-2H5v-2H3V5h2z"
-        fill="#F5DCE0"
-      />
-      <path
-        d="M5 3h4v2H5v6H3V5h2zm10 0v2h2v6h-2V5h-4V3zm0 8v2h-2v2h-2v2H9v-2H7v-2H5v-2h2v2h2v2h2v-2h2v-2z"
-        fill="#E8B8C2"
-      />
-      <path d="M7 5h2v2H7zm8 2h-2V5h2z" fill="#FAFBF7" />
-    </svg>
+    <span className="grid h-9 w-9 place-items-center">
+      <Star className="h-8 w-8 fill-[#FFD700] text-[#FFA500]" />
+    </span>
   );
 }
 
@@ -274,24 +266,24 @@ export default function EntryExperience() {
           <div className="min-h-0">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <PixelHeart />
+                <PixelStar />
                 <div>
-                  <p className="text-lg font-semibold leading-tight text-[#273846]">Map of Us</p>
+                  <p className="text-lg font-semibold leading-tight text-[#273846]">Map of Memories</p>
                   <p className="mt-0.5 text-xs font-semibold text-[#8A796C]">private map</p>
                 </div>
               </div>
-              <span className="grid h-10 w-10 place-items-center rounded-full border border-[#F5DCE0] bg-[#F5DCE0]/58 text-[#D86F82]">
-                {status === "open" ? <Heart className="h-5 w-5 fill-[#D86F82]" /> : <LockKeyhole className="h-5 w-5" />}
+              <span className="grid h-10 w-10 place-items-center rounded-full border border-[#F0DEC4] bg-[#F0DEC4]/58 text-[#C4845A]">
+                {status === "open" ? <Heart className="h-5 w-5 fill-[#C4845A]" /> : <LockKeyhole className="h-5 w-5" />}
               </span>
             </div>
 
             <div className="mt-5">
               <p className="text-[clamp(38px,7vw,74px)] font-semibold leading-[0.9] tracking-normal text-[#273846]">
                 输入
-                <span className="block text-[#D86F82]">纪念日</span>
+                <span className="block text-[#C4845A]">密码</span>
               </p>
               <p className="mt-4 max-w-[430px] text-sm font-medium leading-7 text-[#61717A] sm:text-base">
-                一扇只给我们的地图门，密码藏在开始的那一天。
+                我们的照片，记录幸福到永远。
               </p>
             </div>
 
@@ -302,10 +294,10 @@ export default function EntryExperience() {
             >
               <div className="mb-3 flex items-center justify-between gap-3">
                 <span className="inline-flex items-center gap-2 text-xs font-semibold text-[#8A796C]">
-                  <KeyRound className="h-4 w-4 text-[#D86F82]" />
-                  anniversary code
+                  <KeyRound className="h-4 w-4 text-[#C4845A]" />
+                  code
                 </span>
-                <span className={status === "wrong" ? "text-xs font-semibold text-[#D86F82]" : "text-xs font-semibold text-[#8A796C]/62"}>
+                <span className={status === "wrong" ? "text-xs font-semibold text-[#C4845A]" : "text-xs font-semibold text-[#8A796C]/62"}>
                   {status === "open" ? "已解锁" : status === "checking" ? "验证中" : status === "wrong" ? "再想想" : "4 digits"}
                 </span>
               </div>
@@ -322,7 +314,7 @@ export default function EntryExperience() {
               <div className="mt-3 grid grid-cols-[repeat(3,minmax(0,1fr))] gap-2">
                 {keys.map((key) => (
                   <button
-                    className="login-key grid h-11 place-items-center rounded-[8px] border border-[#E1D3C6] bg-[#FAFBF7]/76 text-base font-semibold text-[#344451] shadow-[0_8px_18px_rgba(91,71,50,0.05)] transition hover:-translate-y-0.5 hover:border-[#E8B8C2] hover:bg-white disabled:cursor-default disabled:opacity-54"
+                    className="login-key grid h-11 place-items-center rounded-[8px] border border-[#E1D3C6] bg-[#FAFBF7]/76 text-base font-semibold text-[#344451] shadow-[0_8px_18px_rgba(91,71,50,0.05)] transition hover:-translate-y-0.5 hover:border-[#D4A574] hover:bg-white disabled:cursor-default disabled:opacity-54"
                     key={key}
                     type="button"
                     onClick={() => pressKey(key)}
@@ -341,11 +333,11 @@ export default function EntryExperience() {
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] border border-[#DCCFC1] bg-white/52 px-4 text-sm font-semibold text-[#344451] transition hover:-translate-y-0.5 hover:bg-white"
               href="/memories"
             >
-              <Camera className="h-4 w-4 text-[#D86F82]" />
+              <Camera className="h-4 w-4 text-[#C4845A]" />
               相册
             </Link>
             <button
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] bg-[#273846] px-4 text-sm font-semibold text-white shadow-[0_16px_34px_rgba(39,56,70,0.18)] transition hover:-translate-y-0.5 hover:bg-[#D86F82]"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] bg-[#273846] px-4 text-sm font-semibold text-white shadow-[0_16px_34px_rgba(39,56,70,0.18)] transition hover:-translate-y-0.5 hover:bg-[#C4845A]"
               type="button"
               onClick={() => void submitCode(code)}
               disabled={status === "checking" || status === "open"}
@@ -379,7 +371,7 @@ export default function EntryExperience() {
                 sizes="60vw"
                 priority
               />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(22,31,39,0.84),rgba(22,31,39,0.24)_50%,rgba(22,31,39,0.72)),radial-gradient(circle_at_72%_22%,rgba(245,220,224,0.24),transparent_34%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(22,31,39,0.84),rgba(22,31,39,0.24)_50%,rgba(22,31,39,0.72)),radial-gradient(circle_at_72%_22%,rgba(240,222,196,0.24),transparent_34%)]" />
             </motion.div>
           </AnimatePresence>
 
@@ -387,12 +379,12 @@ export default function EntryExperience() {
             <div className="absolute left-0 top-0 max-w-[390px]">
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-white/10 px-3 py-2 text-xs font-semibold text-white/76 backdrop-blur">
-                  <Camera className="h-4 w-4 text-[#F5DCE0]" />
+                  <Camera className="h-4 w-4 text-[#F0DEC4]" />
                   private album
                 </div>
                 <p className="mt-6 max-w-[360px] text-[clamp(48px,5.4vw,82px)] font-semibold leading-[0.88] tracking-normal text-white">
                   旧照片
-                  <span className="block text-[#F5AFC0]">新地图</span>
+                  <span className="block text-[#D4A574]">新地图</span>
                 </p>
                 <p className="mt-5 max-w-[320px] text-sm font-medium leading-7 text-white/62">
                   从过去出发，
@@ -428,7 +420,7 @@ export default function EntryExperience() {
                       <p className="text-2xl font-semibold leading-none text-[#273846]">{activeStamp.city}</p>
                       <p className="mt-2 text-sm font-medium text-[#61717A]">{activeStamp.label}</p>
                     </div>
-                    <MapPinned className="h-6 w-6 text-[#D86F82]" />
+                    <MapPinned className="h-6 w-6 text-[#C4845A]" />
                   </div>
                 </motion.div>
               </AnimatePresence>
@@ -466,11 +458,11 @@ export default function EntryExperience() {
               animate={{ opacity: 1 }}
             >
               <motion.div
-                className="rounded-[8px] border border-[#F5DCE0] bg-white/78 px-5 py-4 text-center shadow-[0_22px_56px_rgba(91,71,50,0.14)]"
+                className="rounded-[8px] border border-[#F0DEC4] bg-white/78 px-5 py-4 text-center shadow-[0_22px_56px_rgba(91,71,50,0.14)]"
                 initial={{ scale: 0.92, y: 12 }}
                 animate={{ scale: 1, y: 0 }}
               >
-                <Heart className="mx-auto h-7 w-7 fill-[#D86F82] text-[#D86F82]" />
+                <Star className="mx-auto h-7 w-7 fill-[#C4845A] text-[#C4845A]" />
                 <p className="mt-2 text-sm font-semibold text-[#344451]">正在打开地图</p>
               </motion.div>
             </motion.div>
