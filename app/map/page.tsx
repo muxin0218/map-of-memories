@@ -1,9 +1,17 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { Star, Upload } from "lucide-react";
 import ChinaMap, { SouthChinaSeaInset } from "@/components/ChinaMap";
 import BackToLoginButton from "@/components/BackToLoginButton";
-import { LegendProgress, ProgressBadge, StatsPanel } from "@/components/HomeProgress";
+import {
+  LegendProgress,
+  ProgressBadge,
+  StatsPanel,
+} from "@/components/HomeProgress";
 import RandomPhotoCard from "@/components/RandomPhotoCard";
+import BatchImportModal from "@/components/BatchImportModal";
 
 function BrandMark() {
   return (
@@ -66,6 +74,8 @@ function Legend() {
 }
 
 export default function MapPage() {
+  const [showBatchImport, setShowBatchImport] = useState(false);
+
   return (
     <main className="relative h-[100dvh] max-h-[100dvh] overflow-hidden bg-[#FAFBF7] text-[#5A6670]">
       <div className="map-mist-band" aria-hidden="true" />
@@ -81,15 +91,17 @@ export default function MapPage() {
       <span className="absolute right-[11%] top-[19%] h-2 w-2 bg-[#D6E8F0]" aria-hidden="true" />
 
       <div className="relative z-10 flex h-full">
-        <section className="relative flex h-full min-w-0 flex-1 flex-col overflow-hidden px-6 py-7 sm:px-9">
+        <section className="relative flex h-full min-w-0 flex-1 flex-col overflow-hidden px-4 py-5 sm:px-9 sm:py-7">
           <header className="flex items-start justify-between gap-5">
             <div className="flex items-start gap-4">
               <BrandMark />
               <div>
-                <h1 className="text-[28px] font-semibold leading-tight tracking-[-0.01em] text-[#5A6670]">
+                <h1 className="text-[22px] font-semibold leading-tight tracking-[-0.01em] text-[#5A6670] sm:text-[28px]">
                   Map of Memories
                 </h1>
-                <p className="mt-1 text-base font-medium text-[#5A6670]/62">回忆地图</p>
+                <p className="mt-1 text-sm font-medium text-[#5A6670]/62 sm:text-base">
+                  回忆地图
+                </p>
               </div>
               <ProgressBadge />
             </div>
@@ -102,13 +114,30 @@ export default function MapPage() {
 
           <RandomPhotoCard />
 
-          <div className="absolute bottom-7 left-6 flex flex-col gap-4 sm:left-9">
+          <div className="absolute bottom-7 left-4 flex flex-col gap-4 sm:left-9">
             <SouthChinaSeaInset />
             <Legend />
           </div>
         </section>
+
         <StatsPanel>{null}</StatsPanel>
       </div>
+
+      {/* Floating batch import button — visible on all screen sizes */}
+      <button
+        className="fixed bottom-24 right-5 z-50 flex items-center gap-2 rounded-[10px] border border-[#E8B8C2]/70 bg-[#F5DCE0] px-4 py-3 shadow-[0_8px_24px_rgba(232,184,194,0.35)] transition hover:bg-[#E8B8C2] hover:text-[#FAFBF7] active:scale-95 sm:bottom-8 lg:bottom-8"
+        type="button"
+        onClick={() => setShowBatchImport(true)}
+        aria-label="批量导入打卡"
+      >
+        <Upload className="h-4 w-4" />
+        <span className="text-sm font-semibold">批量导入</span>
+      </button>
+
+      {/* Batch import modal */}
+      {showBatchImport && (
+        <BatchImportModal onClose={() => setShowBatchImport(false)} />
+      )}
     </main>
   );
 }
