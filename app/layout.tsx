@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import MobileFrame from "@/components/MobileFrame";
 
 export const metadata: Metadata = {
   title: "Map of Us",
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <MobileFrame>{children}</MobileFrame>
+      </body>
     </html>
   );
 }
