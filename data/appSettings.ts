@@ -17,11 +17,11 @@ export type LoginPhotoText = {
 
 // Neutral defaults so a fresh copy never shows the original author's personal
 // settings. Each user overrides these from the in-app settings page.
-export const defaultAnniversaryDate = "2025.01.01";
-export const defaultAnniversaryLabel = "我们在一起";
+export const defaultAnniversaryDate = "2024.06.01";
+export const defaultAnniversaryLabel = "纪念日";
 export const defaultWeatherCityIds = ["beijing", "shanghai", "guangzhou"];
 export const maxWeatherCities = 3;
-export const defaultCoupleLogo = "/logo/couple-logo-placeholder.svg";
+export const defaultCoupleLogo = "/logo/logo.jpg";
 
 const isValidLogo = (value: unknown): value is string =>
   typeof value === "string" && (value.startsWith("data:image/") || value.startsWith("/"));
@@ -51,34 +51,34 @@ export const readAppSettings = (): AppSettings => {
     const loginPhotos =
       settings.loginPhotos && typeof settings.loginPhotos === "object" && !Array.isArray(settings.loginPhotos)
         ? Object.fromEntries(
-            Object.entries(settings.loginPhotos).filter(
-              ([, value]) => typeof value === "string" && value.startsWith("data:image/"),
-            ),
-          )
+          Object.entries(settings.loginPhotos).filter(
+            ([, value]) => typeof value === "string" && value.startsWith("data:image/"),
+          ),
+        )
         : {};
     const loginPhotoTexts =
       settings.loginPhotoTexts && typeof settings.loginPhotoTexts === "object" && !Array.isArray(settings.loginPhotoTexts)
         ? Object.fromEntries(
-            Object.entries(settings.loginPhotoTexts).map(([key, value]) => {
-              if (typeof value !== "object" || value === null || Array.isArray(value)) return [key, {}];
-              const item = value as LoginPhotoText;
+          Object.entries(settings.loginPhotoTexts).map(([key, value]) => {
+            if (typeof value !== "object" || value === null || Array.isArray(value)) return [key, {}];
+            const item = value as LoginPhotoText;
 
-              return [
-                key,
-                {
-                  city: typeof item.city === "string" ? item.city : undefined,
-                  label: typeof item.label === "string" ? item.label : undefined,
-                },
-              ];
-            }),
-          )
+            return [
+              key,
+              {
+                city: typeof item.city === "string" ? item.city : undefined,
+                label: typeof item.label === "string" ? item.label : undefined,
+              },
+            ];
+          }),
+        )
         : {};
 
     const anniversaryDate = cleanString(settings.anniversaryDate, 12);
     const weatherCityIds = Array.isArray(settings.weatherCityIds)
       ? settings.weatherCityIds
-          .filter((id): id is string => typeof id === "string" && id.length > 0)
-          .slice(0, maxWeatherCities)
+        .filter((id): id is string => typeof id === "string" && id.length > 0)
+        .slice(0, maxWeatherCities)
       : undefined;
 
     return {

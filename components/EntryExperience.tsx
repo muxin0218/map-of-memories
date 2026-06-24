@@ -37,11 +37,11 @@ const stamps = [
     photo: loginPhotoPath("shanghai"),
   },
   {
-    id: "macau",
-    city: "澳门",
-    label: "旧城花影",
+    id: "nanjing",
+    city: "南京",
+    label: "金陵深秋",
     note: "小巷、坡道和花影，都被收进同一只相框。",
-    photo: loginPhotoPath("macau"),
+    photo: loginPhotoPath("nanjing"),
   },
   {
     id: "hongkong",
@@ -60,7 +60,7 @@ const stamps = [
   {
     id: "zhengzhou",
     city: "郑州",
-    label: "见面那天",
+    label: "天地之中",
     note: "有些城市不是风景，是故事真正开始的地方。",
     photo: loginPhotoPath("zhengzhou"),
   },
@@ -283,7 +283,7 @@ export default function EntryExperience() {
                 <span className="block text-[#C4845A]">密码</span>
               </p>
               <p className="mt-4 max-w-[430px] text-sm font-medium leading-7 text-[#61717A] sm:text-base">
-                我们的照片，记录幸福到永远。
+                古巷逶迤，你我常青。
               </p>
             </div>
 
@@ -387,9 +387,9 @@ export default function EntryExperience() {
                   <span className="block text-[#D4A574]">新地图</span>
                 </p>
                 <p className="mt-5 max-w-[320px] text-sm font-medium leading-7 text-white/62">
-                  从过去出发，
+                  我们的照片，
                   <br />
-                  去看我们走过的地方。
+                  记录幸福到永远。
                 </p>
               </div>
             </div>
