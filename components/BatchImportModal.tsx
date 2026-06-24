@@ -295,8 +295,28 @@ export default function BatchImportModal({ onClose }: BatchImportModalProps) {
                     text: entry.text.trim(),
                     photos: [compressed],
                 });
-                if (success) okCount++;
-                else failCount++;
+                if (success) {
+                    okCount++;
+                    // Also create a memory entry so the city lights up on the main map
+                    try {
+                        const cityInfo = cities.find((c) => c.id === entry.cityId);
+                        await fetch("/api/memories", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                memory: {
+                                    cityId: entry.cityId,
+                                    date: entry.date,
+                                    text: entry.name.trim() || nameFromFile(entry.file),
+                                    image: compressed,
+                                    photos: [compressed],
+                                },
+                            }),
+                        });
+                    } catch {
+                        // Non-critical: memory creation failure shouldn't block the check-in
+                    }
+                } else failCount++;
             } catch {
                 failCount++;
             }
